@@ -276,7 +276,7 @@ void fileInput(List<Student>& list, int& ID) {
 			break;
 		case 5:
 			student.birthYear = toint(str);
-			student.ID = ID;
+			student.ID = ID++;
 			list.add(student);
 			number = 0;
 			break;
