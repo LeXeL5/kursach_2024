@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <functional>
+#include <fstream>
 using namespace std;
 
 struct Student {
@@ -184,7 +184,7 @@ void removeGroup(List<Student>& studentList, int group) {
 			i--;
 		}
 	}
-} 
+}
 void removeStudent(List<Student>& studentList, int ID) {
 	for (int i = 0; i < studentList.count(); i++) {
 		if (studentList.elementAt(i).ID == ID) {
@@ -193,11 +193,32 @@ void removeStudent(List<Student>& studentList, int ID) {
 		}
 	}
 }
-void alphabet() {
-
+void studentsWithDebts(List<Student> list) {
+	if (list.count() == 0) return;
+	List<Student> outputList;
+	for (int i = 0; i < list.count(); i++) {
+		bool flag = false;
+		for (int j = 0; j < 5; j++) {
+			if (list.elementAt(i).marks[j] <= 2) {
+				flag = true;
+				break;
+			}
+		}
+		if (flag) outputList.add(list.elementAt(i));
+	}
+	for (int i = 0; i < outputList.count() - 1; i++) {
+		string min = outputList.elementAt(i).name;
+		for (int j = i; j < outputList.count(); j++) {
+			if (min > outputList.elementAt(j).name) {
+				outputList.insert(i, outputList.elementAt(j));
+				outputList.removeAt(j + 1);
+			}
+		}
+	}
+	for (int i = 0; i < outputList.count(); i++) {
+		cout << outputList.elementAt(i).name << "\t" << outputList.elementAt(i).group << endl;
+	}
 }
-
-
 Student getStudentByID(List<Student> studentList, int ID) {
 	for (int i = 0; i < studentList.count(); i++) {
 		if (studentList.elementAt(i).ID == ID) {
@@ -207,6 +228,78 @@ Student getStudentByID(List<Student> studentList, int ID) {
 	Student student;
 	return student;
 }
+int toint(string str) {
+	int* arr = new int[str.size()];
+	for (int i = 0; i < str.size(); i++) {
+		arr[i] = str[i] - 48;
+	}
+	int num = 0, k = 0;
+	for (int i = str.size() - 1; i >= 0; i--, k++) {
+		num += arr[i] * pow(10, k);
+	}
+	return num;
+}
+int* tointarr(string str) {
+	int arr[5] = {}, k = 0;
+	for (int i = 0; i < str.size(); i++) {
+		if (str[i] != ' ') {
+			arr[k] = str[i] - 48;
+			k++;
+		}
+	}
+	return arr;
+}
+void fileInput(List<Student>& list, int& ID) {
+	Student student;
+	ifstream input;
+	input.open("input.txt");
+	string str;
+	int number = 0;
+	int* arr;
+	while (getline(input, str)) {
+		number++;
+		switch (number) {
+		case 1:
+			student.name = str;
+			break;
+		case 2:
+			student.group = toint(str);
+			break;
+		case 3:
+			arr = tointarr(str);
+			for (int i = 0; i < 5; i++) {
+				student.marks[i] = arr[i];
+			}
+			break;
+		case 4:
+			student.stipend = toint(str);
+			break;
+		case 5:
+			student.birthYear = toint(str);
+			student.ID = ID;
+			list.add(student);
+			number = 0;
+			break;
+		}
+	}
+	input.close();
+}
+
+void fileOutput(List<Student> list) {
+	ofstream output;
+	output.open("output.txt");
+	for (int i = 0; i < list.count(); i++) {
+		Student student = list.elementAt(i);
+		output << student.name << endl;
+		output << student.group << endl;
+		for (int j = 0; j < 5; j++) { output << student.marks[j] << " "; }
+		output << endl << student.stipend << endl;
+		output << student.birthYear << endl;
+		output << student.ID << endl;
+	}
+	output.close();
+}
+
 void menu() {
 	cout << "(0) Terminate program" << endl;
 	cout << "(1) Add student" << endl;
@@ -215,14 +308,16 @@ void menu() {
 	cout << "(4) Show student by ID" << endl;
 	cout << "(5) Show students by parameter" << endl;
 	cout << "(6) Show all students" << endl;
-	
+
 	cout << endl;
 	cout << "(7) Add group of students" << endl;
 	cout << "(8) Remove group of students" << endl;
 	cout << "(9) Change group number" << endl;
 	cout << "(10) Show group of students" << endl;
-	cout << "(11) IDZ" << endl;
+	cout << "(11) Show students with depts" << endl;
 	cout << endl;
+	cout << "(12) File input" << endl;
+	cout << "(13) File output" << endl;
 }
 void submenu() {
 	cout << "(0) Cancel" << endl;
@@ -437,7 +532,7 @@ void main() {
 			cout << "Group number to change: ";
 			cin >> input;
 			cout << "New group number: ";
-			cin >>  input2;
+			cin >> input2;
 			for (int i = 0; i < studentList.count(); i++) {
 				if (studentList.elementAt(i).group == input) {
 					Student student = studentList.elementAt(i);
@@ -462,7 +557,16 @@ void main() {
 			break;
 		}
 		case (11): {
-			//IDZ
+			cout << "students with depths:" << endl;
+			studentsWithDebts(studentList);
+			break;
+		}
+		case (12): {
+			fileInput(studentList, ID);
+			break;
+		}
+		case (13): {
+			fileOutput(studentList);
 			break;
 		}
 		default: {
