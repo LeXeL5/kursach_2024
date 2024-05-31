@@ -229,13 +229,9 @@ Student getStudentByID(List<Student> studentList, int ID) {
 	return student;
 }
 int toint(string str) {
-	int* arr = new int[str.size()];
-	for (int i = 0; i < str.size(); i++) {
-		arr[i] = str[i] - 48;
-	}
 	int num = 0, k = 0;
 	for (int i = str.size() - 1; i >= 0; i--, k++) {
-		num += arr[i] * pow(10, k);
+		num += (str[i] - 48) * pow(10, k);
 	}
 	return num;
 }
@@ -308,7 +304,6 @@ void menu() {
 	cout << "(4) Show student by ID" << endl;
 	cout << "(5) Show students by parameter" << endl;
 	cout << "(6) Show all students" << endl;
-
 	cout << endl;
 	cout << "(7) Add group of students" << endl;
 	cout << "(8) Remove group of students" << endl;
